@@ -47,7 +47,6 @@ const PostFeatureItemStyles = styled.div`
   }
 `;
 const PostFeatureItem = ({ data }) => {
-  console.log("PostFeatureItem ~ data", data);
   const { category, user } = data;
   if (!data || !data.id) return null;
   const date = data?.createdAt?.seconds
@@ -61,7 +60,7 @@ const PostFeatureItem = ({ data }) => {
       <div className="post-content">
         <div className="post-top">
           {category?.name && (
-            <PostCategory to={category.slug}>{category?.name}c</PostCategory>
+            <PostCategory to={category.slug}>{category?.name}</PostCategory>
           )}
           <PostMeta
             authorName={user?.fullname}

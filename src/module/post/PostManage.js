@@ -1,5 +1,4 @@
 import { ActionDelete, ActionEdit, ActionView } from "components/action";
-import { Pagination } from "components/pagination";
 import { Table } from "components/table";
 import { db } from "firebase-app/firebase-config";
 import {
@@ -10,18 +9,24 @@ import {
   limit,
   onSnapshot,
   query,
+  startAfter,
   where,
 } from "firebase/firestore";
 import { debounce } from "lodash";
+import { postStatus } from "utils/constants";
+import DashboardHeading from "module/dashboard/DashboardHeading";
 import React, { useState } from "react";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import { LabelStatus } from "components/label";
+import { Button } from "components/button";
 
-const POST_PER_PAGE = 3;
+const POST_PER_PAGE = 1;
 const PostManage = () => {
   const [filter, setFilter] = useState();
   const [postList, setPostList] = useState();
+  console.log("PostManage ~ postList", postList);
   const [lastDoc, setLastDoc] = useState();
   const [total, setTotal] = useState();
   const navigate = useNavigate();
@@ -31,8 +36,8 @@ const PostManage = () => {
       const newRef = filter
         ? query(
             colRef,
-            where("name", ">=", filter),
-            where("name", "<=", filter + "utf8")
+            where("title", ">=", filter),
+            where("title", "<=", filter + "utf8")
           )
         : query(colRef, limit(POST_PER_PAGE));
       const documentSnapshots = await getDocs(newRef);
@@ -55,9 +60,30 @@ const PostManage = () => {
     }
     fetchData();
   }, [filter]);
-  // const handleFilterPost = debounce((e) => {
-  //   setFilter(e.target.value);
-  // }, 1000);
+  const handleFilterPost = debounce((e) => {
+    setFilter(e.target.value);
+  }, 1000);
+  const handleLoadMorePost = async () => {
+    const nextRef = query(
+      collection(db, "posts"),
+      startAfter(lastDoc || 0),
+      limit(POST_PER_PAGE)
+    );
+    onSnapshot(nextRef, (snapshot) => {
+      let results = [];
+      snapshot.forEach((doc) => {
+        results.push({
+          id: doc.id,
+          ...doc.data(),
+        });
+      });
+      setPostList([...postList, ...results]);
+    });
+    const documentSnapshots = await getDocs(nextRef);
+    const lastVisible =
+      documentSnapshots.docs[documentSnapshots.docs.length - 1];
+    setLastDoc(lastVisible);
+  };
   const handleDeletePost = async (docId) => {
     Swal.fire({
       title: "Are you sure?",
@@ -74,15 +100,31 @@ const PostManage = () => {
       }
     });
   };
+  const renderStatus = (status) => {
+    switch (status) {
+      case postStatus.APPROVED:
+        return <LabelStatus type="success">Approved</LabelStatus>;
+      case postStatus.PENDING:
+        return <LabelStatus type="warning">Pending</LabelStatus>;
+      case postStatus.REJECTED:
+        return <LabelStatus type="danger">Pending</LabelStatus>;
+      default:
+        break;
+    }
+  };
   return (
     <div>
-      <h1 className="dashboard-heading">Manage post</h1>
+      <DashboardHeading
+        title="Manage post"
+        desc="Manage your post"
+      ></DashboardHeading>
       <div className="mb-10 flex justify-end">
         <div className="w-full max-w-[300px]">
           <input
             type="text"
             className="w-full p-4 rounded-lg border border-solid border-gray-300"
             placeholder="Search post..."
+            onChange={handleFilterPost}
           />
         </div>
       </div>
@@ -93,6 +135,7 @@ const PostManage = () => {
             <th>Post</th>
             <th>Category</th>
             <th>Author</th>
+            <th>Status</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -113,7 +156,7 @@ const PostManage = () => {
                       <time className="text-sm text-gray-500">
                         Date:
                         {new Date(
-                          post?.createdAt?.seconds
+                          post?.createdAt?.seconds * 1000
                         ).toLocaleDateString()}
                       </time>
                     </div>
@@ -126,11 +169,20 @@ const PostManage = () => {
                   <span className="text-gray-500">{post.user.fullname}</span>
                 </td>
                 <td>
+                  <span className="text-gray-500">
+                    {renderStatus(post.status)}
+                  </span>
+                </td>
+                <td>
                   <div className="flex items-center gap-x-3 text-gray-500">
                     <ActionView
                       onClick={() => navigate(`/${post.slug}`)}
                     ></ActionView>
-                    <ActionEdit></ActionEdit>
+                    <ActionEdit
+                      onClick={() =>
+                        navigate(`/manage/update-post?id=${post.id}`)
+                      }
+                    ></ActionEdit>
                     <ActionDelete
                       onClick={() => handleDeletePost(post.id)}
                     ></ActionDelete>
@@ -141,7 +193,11 @@ const PostManage = () => {
         </tbody>
       </Table>
       <div className="mt-10">
-        <Pagination></Pagination>
+        {total > postList?.length && (
+          <Button onClick={handleLoadMorePost} className="mx-auto">
+            Load More
+          </Button>
+        )}
       </div>
     </div>
   );

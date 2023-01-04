@@ -4,6 +4,7 @@ import { Field, FieldCheckboxes } from "components/field";
 import ImageUpload from "components/image/ImageUpload";
 import { Input } from "components/input";
 import { Label } from "components/label";
+import { Textarea } from "components/textarea";
 import { db } from "firebase-app/firebase-config";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import useFireBaseImage from "hooks/useFireBaseImage";
@@ -14,7 +15,6 @@ import { useForm } from "react-hook-form";
 import { useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { userRole, userStatus } from "utils/constants";
-import { number } from "yup/lib/locale";
 
 const UserUpdate = () => {
   const {
@@ -33,7 +33,6 @@ const UserUpdate = () => {
   const watchStatusUser = watch("status");
   const watchRoleUser = watch("role");
   const imageUrl = getValues("avatar");
-  console.log("UserUpdate ~ imageUrl", imageUrl);
   const regex = /%2F(\S+)\?/gm;
   const imageName = regex.exec(imageUrl)?.[1];
   const { progress, image, handleDeleteImage, handleSelectImage, setImage } =
@@ -188,6 +187,12 @@ const UserUpdate = () => {
                 User
               </Radio>
             </FieldCheckboxes>
+          </Field>
+        </div>
+        <div className="form-layout">
+          <Field>
+            <Label>Description</Label>
+            <Textarea name="description" control={control}></Textarea>
           </Field>
         </div>
         <Button kind="primary" type="submit" className="mx-auto w-[200px]">

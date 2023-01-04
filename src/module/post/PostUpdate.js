@@ -2,103 +2,79 @@ import { Button } from "components/button";
 import { Radio } from "components/checkbox";
 import { Dropdown } from "components/dropdown";
 import { Field } from "components/field";
+import ImageUpload from "components/image/ImageUpload";
 import { Input } from "components/input";
 import { Label } from "components/label";
-import React, { useState } from "react";
-import { useForm } from "react-hook-form";
-import slugify from "slugify";
-import styled from "styled-components";
-import { postStatus } from "utils/constants";
-import ImageUpload from "components/image/ImageUpload";
-import useFireBaseImage from "hooks/useFireBaseImage";
 import Toggle from "components/toggle/Toggle";
-import { useEffect } from "react";
+import { db } from "firebase-app/firebase-config";
 import {
-  addDoc,
   collection,
   doc,
   getDoc,
   getDocs,
   query,
-  serverTimestamp,
+  updateDoc,
   where,
 } from "firebase/firestore";
-import { db } from "firebase-app/firebase-config";
-import { useAuth } from "context/auth-context";
-import { toast } from "react-toastify";
+import useFireBaseImage from "hooks/useFireBaseImage";
 import DashboardHeading from "module/dashboard/DashboardHeading";
-const PostAddNewStyles = styled.div``;
-const PostAddNew = () => {
-  const { control, watch, setValue, handleSubmit, getValues, reset } = useForm({
-    defaultValues: {
-      title: "",
-      slug: "",
-      status: 2,
-      hot: false,
-      category: {},
-      user: {},
-    },
+import React, { useMemo, useState } from "react";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { useSearchParams } from "react-router-dom";
+import { postStatus } from "utils/constants";
+import ReactQuill, { Quill } from "react-quill";
+import "react-quill/dist/quill.snow.css";
+import { toast } from "react-toastify";
+import ImageUploader from "quill-image-uploader";
+import axios from "axios";
+Quill.register("modules/imageUploader", ImageUploader);
+const PostUpdate = () => {
+  const {
+    handleSubmit,
+    control,
+    watch,
+    setValue,
+    reset,
+    getValues,
+    formState: { isSubmitting },
+  } = useForm({
+    mode: "onChange",
   });
-  const { userInfo } = useAuth();
-  const [categories, setCategories] = useState([]);
-  const [selectCategory, setSelectCategory] = useState("");
-  const [loading, setLoading] = useState(false);
+
+  const [param] = useSearchParams();
+  const postId = param.get("id");
   const watchStatus = watch("status");
   const watchHot = watch("hot");
-  const {
-    progress,
-    image,
-    handleDeleteImage,
-    handleSelectImage,
-    handleResetUpload,
-  } = useFireBaseImage(setValue, getValues);
-  const addPostHandler = async (values) => {
-    setLoading(true);
-    try {
-      const cloneValue = { ...values };
-      cloneValue.slug = slugify(cloneValue.slug || cloneValue.title, {
-        lower: true,
-      });
-      cloneValue.status = Number(values.status);
-      const colRef = collection(db, "posts");
-      await addDoc(colRef, {
-        ...cloneValue,
-        image,
-        createdAt: serverTimestamp(),
-      });
-      toast.success("Create new post successfully", { pauseOnHover: false });
-      reset({
-        title: "",
-        slug: "",
-        status: 2,
-        category: {},
-        user: {},
-        hot: false,
-      });
-      handleResetUpload();
-      setSelectCategory("");
-    } catch (error) {
-      setLoading(false);
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  const imageName = getValues("image_name");
+  const imageUrl = getValues("image");
+  const [categories, setCategories] = useState();
+  const [selectCategory, setSelectCategory] = useState();
+  const [content, setContent] = useState("");
+  const { progress, image, handleDeleteImage, handleSelectImage, setImage } =
+    useFireBaseImage(setValue, getValues, imageName, deletePostImage);
+  async function deletePostImage() {
+    const colRef = doc(db, "posts", postId);
+    await updateDoc(colRef, {
+      avatar: "",
+    });
+  }
+  useEffect(() => {
+    setImage(imageUrl);
+  }, [imageUrl, setImage]);
   useEffect(() => {
     async function fetchDataUser() {
-      if (!userInfo) return;
-      const colRef = collection(db, "users");
-      const q = query(colRef, where("email", "==", userInfo.email));
-      const querySnapshot = await getDocs(q);
-      querySnapshot.forEach((doc) => {
-        setValue("user", {
-          id: doc.id,
-          ...doc.data(),
-        });
-      });
+      if (!postId) return;
+      const colRef = doc(db, "posts", postId);
+      const docData = await getDoc(colRef);
+      if (docData) {
+        reset(docData.data());
+        setSelectCategory(docData.data().category);
+        setContent(docData.data().content);
+      }
     }
     fetchDataUser();
-  }, [setValue, userInfo]);
+  }, [postId, reset, setValue]);
   useEffect(() => {
     async function getData() {
       const colRef = collection(db, "categories");
@@ -115,9 +91,6 @@ const PostAddNew = () => {
     }
     getData();
   }, []);
-  useEffect(() => {
-    document.title = "Monkey Blogging - Add new post";
-  }, []);
   const handleClickOption = async (item) => {
     const colRef = doc(db, "categories", item.id);
     const docData = await getDoc(colRef);
@@ -127,10 +100,48 @@ const PostAddNew = () => {
     });
     setSelectCategory(item);
   };
+  const handleUpdatePost = async (values) => {
+    const colRef = doc(db, "posts", postId);
+    await updateDoc(colRef, {
+      ...values,
+      content,
+    });
+    toast.success("Update successfully!");
+  };
+
+  const modules = useMemo(
+    () => ({
+      toolbar: [
+        ["bold", "italic", "underline", "strike"],
+        ["blockquote"],
+        [{ header: 1 }, { header: 2 }], // custom button values
+        [{ list: "ordered" }, { list: "bullet" }],
+        [{ header: [1, 2, 3, 4, 5, 6, false] }],
+        ["link", "image"],
+      ],
+      imageUploader: {
+        upload: async (file) => {
+          const formData = new FormData();
+          formData.append("image", file);
+          const response = await axios({
+            method: "post",
+            url: "https://api.imgbb.com/1/upload?key=018b8e3c945ce52bd567593bdbf31d35",
+            data: formData,
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          });
+          console.log("upload: ~ response", response);
+          return response.data.data.url;
+        },
+      },
+    }),
+    []
+  );
   return (
-    <PostAddNewStyles>
-      <DashboardHeading title="Post" desc="Add new post"></DashboardHeading>
-      <form onSubmit={handleSubmit(addPostHandler)}>
+    <div>
+      <DashboardHeading title="Post" desc="Update your post"></DashboardHeading>
+      <form onSubmit={handleSubmit(handleUpdatePost)}>
         <div className="grid grid-cols-2 gap-x-10 mb-10">
           <Field>
             <Label>Title</Label>
@@ -186,7 +197,19 @@ const PostAddNew = () => {
             </Dropdown>
           </Field>
         </div>
-
+        <div className="mb-10">
+          <Field>
+            <Label>Content</Label>
+            <div className="entry-content">
+              <ReactQuill
+                modules={modules}
+                theme="snow"
+                value={content}
+                onChange={setContent}
+              />
+            </div>
+          </Field>
+        </div>
         <div className="grid grid-cols-2 gap-x-10 mb-10">
           <Field>
             <Label>Status</Label>
@@ -231,14 +254,14 @@ const PostAddNew = () => {
         <Button
           type="submit"
           className="mx-auto w-[250px]"
-          isLoading={loading}
-          disable={loading}
+          isLoading={isSubmitting}
+          disable={isSubmitting}
         >
-          Add new post
+          Update post
         </Button>
       </form>
-    </PostAddNewStyles>
+    </div>
   );
 };
 
-export default PostAddNew;
+export default PostUpdate;

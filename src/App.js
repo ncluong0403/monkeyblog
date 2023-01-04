@@ -2,13 +2,14 @@ import CategoryAddNew from "module/category/CategoryAddNew";
 import CategoryManage from "module/category/CategoryManage";
 import CategoryUpdate from "module/category/CategoryUpdate";
 import PostAddNew from "module/post/PostAddNew";
+import PostDetailsPage from "module/post/PostDetailsPage";
 import PostManage from "module/post/PostManage";
+import PostUpdate from "module/post/PostUpdate";
 import UserAddNew from "module/user/UserAddNew";
 import UserManage from "module/user/UserManage";
 import UserProfile from "module/user/UserProfile";
 import UserUpdate from "module/user/UserUpdate";
 import PageNotFound from "pages/PageNotFound";
-import PostDetailsPage from "pages/PostDetailsPage";
 import { Route, Routes } from "react-router-dom";
 import { AuthProvider } from "./context/auth-context";
 import DashboardLayout from "./module/dashboard/DashboardLayout";
@@ -42,6 +43,10 @@ function App() {
             <Route
               path="/manage/add-post"
               element={<PostAddNew></PostAddNew>}
+            ></Route>
+            <Route
+              path="/manage/update-post"
+              element={<PostUpdate></PostUpdate>}
             ></Route>
             <Route path="/manage/category" element={<CategoryManage />}></Route>
             <Route
