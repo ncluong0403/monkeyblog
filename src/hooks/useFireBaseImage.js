@@ -5,6 +5,7 @@ import {
   ref,
   uploadBytesResumable,
 } from "firebase/storage";
+import { set } from "lodash";
 import { useState } from "react";
 export default function useFireBaseImage(
   setValue,
@@ -41,6 +42,7 @@ export default function useFireBaseImage(
       })
       .catch((error) => {
         console.log("Can't remove image");
+        setImage("");
       });
   };
   const handleUploadImage = (file) => {

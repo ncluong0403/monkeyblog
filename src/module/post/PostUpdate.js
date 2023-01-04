@@ -101,9 +101,11 @@ const PostUpdate = () => {
     setSelectCategory(item);
   };
   const handleUpdatePost = async (values) => {
-    const colRef = doc(db, "posts", postId);
-    await updateDoc(colRef, {
+    console.log("handleUpdatePost ~ values", values);
+    const docRef = doc(db, "posts", postId);
+    await updateDoc(docRef, {
       ...values,
+      image,
       content,
     });
     toast.success("Update successfully!");

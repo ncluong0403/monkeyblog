@@ -4,12 +4,12 @@ import React, { useState } from "react";
 import { useEffect } from "react";
 
 const Author = ({ userId = "" }) => {
-  const [infoUser, setInfoUser] = useState();
+  const [infoUser, setInfoUser] = useState({});
   useEffect(() => {
     async function fetchDataUser() {
-      const colRef = doc(db, "users", userId);
-      const docData = await getDoc(colRef);
-      if (docData) {
+      const docRef = doc(db, "users", userId);
+      const docData = await getDoc(docRef);
+      if (docData.data()) {
         setInfoUser(docData.data());
       }
     }

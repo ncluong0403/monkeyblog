@@ -1,7 +1,7 @@
 import React from "react";
 import { useController } from "react-hook-form";
 import styled from "styled-components";
-
+import PropTypes from "prop-types";
 const TextareaStyles = styled.div`
   position: relative;
   width: 100%;
@@ -54,4 +54,10 @@ const Textarea = ({
   );
 };
 
+Textarea.propTypes = {
+  name: PropTypes.string.isRequired,
+  control: PropTypes.any.isRequired,
+  type: PropTypes.string,
+  children: PropTypes.any,
+};
 export default Textarea;

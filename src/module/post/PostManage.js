@@ -21,12 +21,13 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { LabelStatus } from "components/label";
 import { Button } from "components/button";
+import { useAuth } from "context/auth-context";
 
-const POST_PER_PAGE = 1;
+const POST_PER_PAGE = 10;
 const PostManage = () => {
+  const { userInfo } = useAuth();
   const [filter, setFilter] = useState();
   const [postList, setPostList] = useState();
-  console.log("PostManage ~ postList", postList);
   const [lastDoc, setLastDoc] = useState();
   const [total, setTotal] = useState();
   const navigate = useNavigate();
@@ -112,6 +113,7 @@ const PostManage = () => {
         break;
     }
   };
+  if (userInfo.role !== 1) return null;
   return (
     <div>
       <DashboardHeading

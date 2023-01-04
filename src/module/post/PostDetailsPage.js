@@ -1,14 +1,6 @@
-import Heading from "components/layout/Heading";
 import Layout from "components/layout/Layout";
 import { db } from "firebase-app/firebase-config";
-import {
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  query,
-  where,
-} from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import PostCategory from "module/post/PostCategory";
 import PostImage from "module/post/PostImage";
 import PostMeta from "module/post/PostIMeta";
@@ -18,8 +10,8 @@ import { useParams } from "react-router-dom";
 import styled from "styled-components";
 import parse from "html-react-parser";
 import PageNotFound from "pages/PageNotFound";
-import Author from "module/user/author/Author";
 import PostRelated from "./PostRelated";
+import Author from "components/author/Author";
 const PostDetailsPageStyles = styled.div`
   padding-bottom: 100px;
   .post {
