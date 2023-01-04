@@ -4,9 +4,9 @@
 @tailwind utilities;
 @import "content";
 @layer base {
-  html {
-    scroll-behavior: smooth;
-  }
+  // html {
+  //   scroll-behavior: smooth;
+  // }
   body {
     line-height: 1.5;
     // -webkit-font-smoothing: antialiased;
@@ -14,7 +14,7 @@
     font-family: "Epilogue", sans-serif;
     font-size: 16px;
     color: #232323;
-    scroll-behavior: smooth;
+    // scroll-behavior: smooth;
   
   }
 }
