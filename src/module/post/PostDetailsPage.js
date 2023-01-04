@@ -126,7 +126,7 @@ const PostDetailsPage = () => {
   }, [slug]);
   useEffect(() => {
     document.body.scrollIntoView({ behavior: "smooth", block: "start" });
-    // window.scroll(0, 0);
+    window.scroll(0, 0);
   }, [slug]);
   const formDate = new Date(
     data?.category?.createdAt?.seconds * 1000
