@@ -1,6 +1,8 @@
 import { signOut } from "firebase/auth";
-import React from "react";
-import { NavLink } from "react-router-dom";
+import IconMenu from "icon/IconMenu";
+import Sidebar from "module/dashboard/Sidebar";
+import React, { useState } from "react";
+import { NavLink, Outlet } from "react-router-dom";
 import styled from "styled-components";
 import { useAuth } from "../../context/auth-context";
 import { auth } from "../../firebase-app/firebase-config";
@@ -64,18 +66,16 @@ const HeaderStyles = styled.header`
     align-items: center;
   }
 `;
-function getLastName(name) {
-  if (!name) return "User";
-  const length = name.split(" ").length;
-  const lastName = name.split(" ")[length - 1];
-  return lastName;
-}
 const Header = () => {
   const { userInfo } = useAuth();
+  const [show, setShow] = useState(false);
+  const handleShowMenu = (e) => {
+    setShow(!show);
+  };
   return (
     <HeaderStyles>
       <div className="container">
-        <div className="header-main">
+        <div className="header-main relative">
           <NavLink to="/">
             <img srcSet="/logo.png 2x" alt="monkey blogging" className="logo" />
           </NavLink>
@@ -144,6 +144,12 @@ const Header = () => {
               >
                 Dashboard
               </Button>
+            </div>
+          )}
+          <IconMenu onClick={handleShowMenu}></IconMenu>
+          {show && (
+            <div className="absolute top-2/4 -right-[50px]">
+              <Sidebar></Sidebar>
             </div>
           )}
         </div>

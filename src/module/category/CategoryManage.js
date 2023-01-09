@@ -22,7 +22,7 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { categoryStatus } from "utils/constants";
 
-const CATEGORY_PER_PAGE = 1;
+const CATEGORY_PER_PAGE = 5;
 const CategoryManage = () => {
   const [total, setTotal] = useState();
   const navigate = useNavigate();
@@ -130,7 +130,7 @@ const CategoryManage = () => {
           {categoryList.length > 0 &&
             categoryList.map((category) => (
               <tr key={category.id}>
-                <td>{category.id}</td>
+                <td>{category.id.slice(0, 5)}</td>
                 <td>{category.name}</td>
                 <td className="italic text-gray-400">{category.slug}</td>
                 <td>

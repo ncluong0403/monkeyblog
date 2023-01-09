@@ -25,7 +25,7 @@ const SidebarStyles = styled.div`
     }
   }
   @media screen and (max-width: 1023.98px) {
-    display: none;
+    display: block;
   }
 `;
 const sidebarLinks = [

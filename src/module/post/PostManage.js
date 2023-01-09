@@ -23,7 +23,7 @@ import { LabelStatus } from "components/label";
 import { Button } from "components/button";
 import { useAuth } from "context/auth-context";
 
-const POST_PER_PAGE = 10;
+const POST_PER_PAGE = 5;
 const PostManage = () => {
   const { userInfo } = useAuth();
   const [filter, setFilter] = useState();

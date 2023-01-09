@@ -34,6 +34,9 @@ const DashboardStyles = styled.div`
         grid-template-columns: 100%;
         padding: 20px;
       }
+      &-children {
+        margin-top: 40px;
+      }
     }
   }
 `;

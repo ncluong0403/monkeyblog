@@ -1,0 +1,33 @@
+// Tablet layout
+@media screen and (max-width:1024px) {
+  .header-main {
+    justify-content: space-between;
+  }
+  .header-auth {
+    display:none !important;
+  }
+  .search  {
+    display:none
+  }
+  .layout {
+    display: block !important;
+  }
+  .sidebar {
+    margin-top:40px;
+  }
+  .icon-menu {
+    display:block;
+  }
+}
+// Mobile layout
+@media screen and (max-width:768px) {
+  .header-main {
+    justify-content: space-between;
+  }
+  .search  {
+    display:none
+  }
+ .menu{
+    display:none !important;
+  }
+}
