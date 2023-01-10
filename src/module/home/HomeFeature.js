@@ -38,7 +38,7 @@ const HomeFeature = () => {
     <HomeFeatureStyles className="home-block">
       <div className="container">
         <Heading>Bài viết nổi bật</Heading>
-        <div className="grid-layout">
+        <div className="grid-layout layout-mobile">
           {posts?.length > 0 &&
             posts.map((post) => (
               <PostFeatureItem key={post.id} data={post}></PostFeatureItem>

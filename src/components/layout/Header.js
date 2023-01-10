@@ -146,7 +146,7 @@ const Header = () => {
               </Button>
             </div>
           )}
-          <IconMenu onClick={handleShowMenu}></IconMenu>
+          {userInfo && <IconMenu onClick={handleShowMenu}></IconMenu>}
           {show && (
             <div className="absolute top-2/4 -right-[50px]">
               <Sidebar></Sidebar>

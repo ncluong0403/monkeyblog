@@ -47,6 +47,7 @@ const PostFeatureItemStyles = styled.div`
   }
   @media screen and (max-width: 1024px) {
     height: 333px;
+    margin-bottom: 40px;
   }
 `;
 const PostFeatureItem = ({ data }) => {

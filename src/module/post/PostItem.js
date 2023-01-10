@@ -30,7 +30,6 @@ const PostItem = ({ post = "" }) => {
   const formDate = new Date(
     post?.category?.createdAt?.seconds * 1000
   ).toLocaleDateString();
-
   if (!post) return null;
   return (
     <PostItemStyles>

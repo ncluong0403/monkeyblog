@@ -18,6 +18,9 @@
   .icon-menu {
     display:block;
   }
+  .layout-mobile{
+    display:block !important;
+  }
 }
 // Mobile layout
 @media screen and (max-width:768px) {
@@ -29,5 +32,8 @@
   }
  .menu{
     display:none !important;
+  }
+  .logo {
+    width: 70px;
   }
 }

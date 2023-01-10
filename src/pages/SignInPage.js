@@ -87,7 +87,7 @@ const SignInPage = () => {
           type="submit"
           disabled={isSubmitting}
           isLoading={isSubmitting}
-          className=" w-full min-w-[400px] mx-auto "
+          className=" w-full max-w-[400px] mx-auto "
         >
           Sign In
         </Button>
