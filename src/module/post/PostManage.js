@@ -113,7 +113,7 @@ const PostManage = () => {
         break;
     }
   };
-  if (userInfo.role !== 1) return null;
+  // if (userInfo.role !== 1) return null;
   return (
     <div>
       <DashboardHeading
