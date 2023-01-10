@@ -5,7 +5,7 @@ import UserTable from "./UserTable";
 
 const UserManage = () => {
   const { userInfo } = useAuth();
-  if (userInfo.role !== 1) return null;
+  // if (userInfo.role !== 1) return null;
   return (
     <div>
       <DashboardHeading

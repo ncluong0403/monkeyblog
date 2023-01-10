@@ -100,7 +100,7 @@ const CategoryManage = () => {
       }
     });
   };
-
+  // if (userInfo.role !== 1) return null;
   return (
     <div>
       <DashboardHeading title="Categories" desc="Manage your category">
